@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Collider2D))]
@@ -16,6 +18,20 @@ public class KeyComponent : MonoBehaviour
 
     public KeyCollection KeyCollection;
     public CollectedKeys CollectedKeys;
+    public UiManager UiManager;
+
+    public bool IsNotExpired => m_Collider.enabled;
+
+    public UnityEvent<KeyComponent> OnCollected;
+
+    private void Awake()
+    {
+        m_Collider = GetComponent<Collider2D>();
+        m_SpriteRenderer = GetComponent<SpriteRenderer>();
+        
+        m_OriginalColor = m_SpriteRenderer.color;
+        m_TransparentColor = new Color(m_OriginalColor.r, m_OriginalColor.g, m_OriginalColor.b, 0.6f);
+    }
 
     private void OnEnable()
     {
@@ -25,16 +41,12 @@ public class KeyComponent : MonoBehaviour
     private void OnDisable()
     {
         KeyCollection.Remove(this);
+        UiManager.UpdateUI();
     }
 
     private void Start()
     {
-        m_Collider = GetComponent<Collider2D>();
-        m_SpriteRenderer = GetComponent<SpriteRenderer>();
-
-        m_OriginalColor = m_SpriteRenderer.color;
-        m_TransparentColor = new Color(m_OriginalColor.r, m_OriginalColor.g, m_OriginalColor.b, 0.6f);
-        RespawnManager.RegisterKey(this);
+        RespawnManager.RegisterEnemySpawnerKey(this);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -43,6 +55,7 @@ public class KeyComponent : MonoBehaviour
         {
             CollectedKeys.AddKey(this);
             Collected = true;
+            OnCollected.Invoke(this);
             gameObject.SetActive(false);
         }
     }

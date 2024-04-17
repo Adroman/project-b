@@ -4,8 +4,9 @@ using UnityEngine;
 [RequireComponent(typeof(KeyComponent))]
 public class KeyTimer : MonoBehaviour
 {
+    public UiManager UiManager;
     public float LifetimeInSeconds;
-
+    
     private KeyComponent m_KeyComponent;
     
     private float m_ElapsedSeconds = 0;
@@ -13,9 +14,10 @@ public class KeyTimer : MonoBehaviour
     public void ResetTimer()
     {
         m_ElapsedSeconds = 0;
+        UiManager.UpdateUI();
     }
 
-    private void Start()
+    private void Awake()
     {
         m_KeyComponent = GetComponent<KeyComponent>();
     }
@@ -29,5 +31,10 @@ public class KeyTimer : MonoBehaviour
             m_KeyComponent.DespawnKey();
             enabled = false;
         }
+    }
+
+    private void OnDisable()
+    {
+        UiManager.UpdateUI();
     }
 }

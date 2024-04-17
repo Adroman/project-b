@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using Events;
+using Gamekit2D;
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -8,8 +10,12 @@ public class ExitComponent : MonoBehaviour
     private bool m_CanEnter = false;
 
     public RespawnManager RespawnManager;
+    public KeySaver KeySaver;
+    public UiManager UiManager;
+    public UiVictoryPopup UiVictoryPopup;
+    public List<UiKeyFader> KeyFadersToUnfade;
     
-    public GameObject Ellen;
+    public Damageable Ellen;
     private Vector3 m_StartingPosition;
 
     private void Start()
@@ -25,7 +31,7 @@ public class ExitComponent : MonoBehaviour
         }
     }
 
-    private void OnTriggerExit(Collider other)
+    private void OnTriggerExit2D(Collider2D other)
     {
         if (other.gameObject.CompareTag("CustomPlayer"))
         {
@@ -43,15 +49,31 @@ public class ExitComponent : MonoBehaviour
 
     private void EnterDoor()
     {
+        m_CanEnter = false;
+        KeySaver.SaveKeys();
         if (RespawnManager.AllKeysCollected())
         {
             Debug.Log("All keys collected");
+            UiVictoryPopup.ShowUi();
         }
         else
         {
-            Debug.Log("Not all keys collected");
-            RespawnManager.RespawnKeysAndEnemies();
-            Ellen.transform.position = m_StartingPosition;
+            ResetKeysEnemiesAndPlayer();
         }
+    }
+
+    public void ResetKeysEnemiesAndPlayer()
+    {
+        Debug.Log("Not all keys collected");
+        UiManager.AddAttempt();
+        KeySaver.ResetKeys();
+        RespawnManager.RespawnKeysAndEnemies();
+        Ellen.SetHealth(5);
+        Ellen.transform.position = m_StartingPosition;
+        foreach (var uiKeyFader in KeyFadersToUnfade)
+        {
+            uiKeyFader.UnfadeKeys();
+        }
+        UiManager.UpdateUI();
     }
 }

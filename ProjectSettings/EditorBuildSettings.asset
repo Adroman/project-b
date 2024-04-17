@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/CustomWork/Level-1.unity
+    guid: 450efb845f8aa234eb8969477a5be9f7
+  - enabled: 1
     path: Assets/2DGamekit/Scenes/Start.unity
     guid: 57df1e417250bc247976c2c0dc088efe
   - enabled: 1
@@ -29,10 +32,4 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/2DGamekit/Scenes/UI/Loading.unity
     guid: ebc4647ff02971c4ba1b207af066be4d
-  - enabled: 1
-    path: Assets/NewScene.unity
-    guid: a341347ecfade124f817cac8ea56a209
-  - enabled: 1
-    path: Assets/Level-1.unity
-    guid: 450efb845f8aa234eb8969477a5be9f7
   m_configObjects: {}
