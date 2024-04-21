@@ -1,10 +1,10 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(KeyComponent))]
 public class KeyTimer : MonoBehaviour
 {
     public UiManager UiManager;
+    public AudioSource KeyDisablerAudio;
     public float LifetimeInSeconds;
     
     private KeyComponent m_KeyComponent;
@@ -30,6 +30,7 @@ public class KeyTimer : MonoBehaviour
         {
             m_KeyComponent.DespawnKey();
             enabled = false;
+            KeyDisablerAudio.Play();
         }
     }
 

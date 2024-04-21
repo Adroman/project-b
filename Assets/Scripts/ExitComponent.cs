@@ -14,6 +14,8 @@ public class ExitComponent : MonoBehaviour
     public UiManager UiManager;
     public UiVictoryPopup UiVictoryPopup;
     public List<UiKeyFader> KeyFadersToUnfade;
+    public KeyDisablerAudio RedKeyDisabler;
+    public KeyDisablerAudio GreenKeyDisabler;
     
     public Damageable Ellen;
     private Vector3 m_StartingPosition;
@@ -74,6 +76,8 @@ public class ExitComponent : MonoBehaviour
         {
             uiKeyFader.UnfadeKeys();
         }
+        RedKeyDisabler.Reset();
+        GreenKeyDisabler.Reset();
         UiManager.UpdateUI();
     }
 }

@@ -1,17 +1,13 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.Serialization;
 
 [RequireComponent(typeof(Collider2D))]
 [RequireComponent(typeof(SpriteRenderer))]
 public class KeyComponent : MonoBehaviour
 {
-    private Collider2D m_Collider;
-    private SpriteRenderer m_SpriteRenderer;
-    
-    private Color m_OriginalColor;
-    private Color m_TransparentColor;
+    private Animator m_Animator;
+    private KeyTimer m_Timer;
+    private bool m_HasTimer;
 
     public RespawnManager RespawnManager;
     public bool Collected = false;
@@ -20,22 +16,22 @@ public class KeyComponent : MonoBehaviour
     public CollectedKeys CollectedKeys;
     public UiManager UiManager;
 
-    public bool IsNotExpired => m_Collider.enabled;
+    public bool IsNotExpired => m_Animator.GetBool(Enabled);
 
     public UnityEvent<KeyComponent> OnCollected;
+    private static readonly int Enabled = Animator.StringToHash("Enabled");
 
     private void Awake()
     {
-        m_Collider = GetComponent<Collider2D>();
-        m_SpriteRenderer = GetComponent<SpriteRenderer>();
-        
-        m_OriginalColor = m_SpriteRenderer.color;
-        m_TransparentColor = new Color(m_OriginalColor.r, m_OriginalColor.g, m_OriginalColor.b, 0.6f);
+        m_Animator = GetComponent<Animator>();
+        m_Timer = GetComponent<KeyTimer>();
+        m_HasTimer = m_Timer != null;
     }
 
     private void OnEnable()
     {
         KeyCollection.Add(this);
+        m_Animator.SetBool(Enabled, true);
     }
     
     private void OnDisable()
@@ -62,23 +58,25 @@ public class KeyComponent : MonoBehaviour
 
     public void DespawnKey()
     {
-        m_Collider.enabled = false;
-        m_SpriteRenderer.color = m_TransparentColor;
+        if (m_Animator.GetBool(Enabled))
+        {
+            m_Animator.SetBool(Enabled, false);
+        }
     }
 
     public void RespawnKey()
     {
         if (!CollectedKeys.ContainsKey(this))
         {
-            m_Collider.enabled = true;
-            m_SpriteRenderer.color = m_OriginalColor;
-
-            var timer = GetComponent<KeyTimer>();
-
-            if (timer != null)
+            if (!m_Animator.GetBool(Enabled))
             {
-                timer.enabled = true;
-                timer.ResetTimer();
+                m_Animator.SetBool(Enabled, true);
+            }
+            
+            if (m_HasTimer)
+            {
+                m_Timer.enabled = true;
+                m_Timer.ResetTimer();
             }
         }
     }
